@@ -15,6 +15,8 @@ int main(void)
 	char *line = NULL;
 	size_t len = 0;
 	ssize_t command;
+	pid_t process = 0;
+	int status;
 
 	if (command != -1)
 	{
