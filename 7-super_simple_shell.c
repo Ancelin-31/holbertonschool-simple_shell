@@ -2,6 +2,8 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <string.h>
+#include <stdlib.h>
 
 /**
  * main - super simple command interpreter
@@ -14,14 +16,16 @@ int main(void)
 	size_t len = 0;
 	ssize_t command;
 
-	char *command = getline(&line, &len, stdin);
-
 	if (command != -1)
 	{
-		printf("%s", line);
-		printf("%zd\n", command);
+		while (1)
+		{
+			command = getline(&line, &len, stdin);
+			line[command] = '\0';
+			printf("%s", line);
+			printf("%i\n", command);
+		}
 	}
-
 	free(line);
 	return (0);
 }
