@@ -19,9 +19,14 @@ int main(void)
 	{
 		memset(args, 0, sizeof(args));
 		read = getline(&line, &len, stdin);
+		
 		if (read < 0)
 			break;
+		
 		tokenize(line, args);
+		
+		if (args[0] == NULL)
+			continue;
 
 		if (isatty(STDIN_FILENO) != 0)
 			printf("$ ");
