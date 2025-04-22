@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 
 void tokenize(char *line, char **args);
+char * _getenv(char *string, char **envp);
 
 
 #endif
