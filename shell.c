@@ -27,7 +27,10 @@ int main(void)
 			printf("$ ");
 			
 		if (stat(args[0], &st) != 0)
-			fprintf(stderr, "hsh: 1: %s: not found\n", args[0]);
+			{
+				fprintf(stderr, "hsh: 1: %s: not found\n", args[0]);
+				break;
+			}
 		process = fork();
 			
 		if (process < 0)
