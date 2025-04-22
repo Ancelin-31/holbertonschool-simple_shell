@@ -9,7 +9,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-int tokenize(void);
+void tokenize(char *line, char **args);
 
 
 #endif

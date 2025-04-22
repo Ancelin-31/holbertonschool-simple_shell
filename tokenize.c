@@ -5,17 +5,17 @@
  * Return: array of each word of the string
  */
 
-int tokenize(void)
+void tokenize(char *line, char **args)
 {
 	char *linetok;
-	char *line = NULL;
-	size_t len = 0;
+	int i = 0;
 
-	getline(&line, &len, stdin);
-	linetok = strtok(line, " ");
+	linetok = strtok(line, " \n");
 
 	while (linetok != NULL)
-		linetok = strtok(NULL, " ");
-
-	return (0);
+	{	
+		args[i] = linetok;
+		linetok = strtok(NULL, " \n");
+		i++;
+	}
 }

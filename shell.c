@@ -8,7 +8,7 @@
 int main(void)
 {
 	char *line = NULL;
-	char *args[] = {NULL, NULL};
+	char *args[4096];
 	size_t len = 0;
 	ssize_t read = 0;
 	pid_t process = 0;
@@ -17,12 +17,12 @@ int main(void)
 
 	while (1)
 	{
+		memset(args, 0, sizeof(args));
 		read = getline(&line, &len, stdin);
 		if (read < 0)
 			break;
+		tokenize(line, args);
 
-		line[strlen(line) - 1] = '\0';
-		args[0] = line;
 		if (isatty(STDIN_FILENO) != 0)
 			printf("$ ");
 			
@@ -38,7 +38,7 @@ int main(void)
 
 		if (process == 0)
 		{
-			execve(line, args, NULL);
+			execve(args[0], args, NULL);
 			break;
 		}
 
