@@ -8,6 +8,7 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <errno.h>
 
 char *_getenv(char *string, char **env);
 char *find_path(char *cmd, char **env);
