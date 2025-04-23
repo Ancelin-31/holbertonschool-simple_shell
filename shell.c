@@ -1,60 +1,86 @@
 #include "shell.h"
+#include <errno.h>
+#include <unistd.h>
 
-/**
- * main - super simple command interpreter
- * Return: 0
- */
 
-int main(void)
+char *find_path(char *cmd, char **env)
 {
-	char *line = NULL;
-	char *args[4096];
-	size_t len = 0;
-	ssize_t read = 0;
-	pid_t process = 0;
-	int status;
-	struct stat st;
-
-	while (1)
+	char *path, *copy, *dir, *full;
+	size_t len;    /* Si l'utilisateur donne un slash, teste directement */
+	if (strchr(cmd, '/'))
 	{
-		memset(args, 0, sizeof(args));
-		read = getline(&line, &len, stdin);
-		
-		if (read < 0)
+		if (access(cmd, X_OK) == 0)
+		{
+			/* duplique cmd */
+			len = strlen(cmd) + 1;
+			full = malloc(len);
+			if (full)
+				strcpy(full, cmd);
+			return full;
+		}
+		return NULL;
+	}    /* Sinon, on récupère PATH */
+	path = _getenv("PATH", env);
+	if (!path)
+		return NULL;    /* copie PATH pour strtok */
+	copy = malloc(strlen(path) + 1);
+	if (!copy)
+		return NULL;
+	strcpy(copy, path);    /* pour chaque répertoire de PATH */
+	dir = strtok(copy, ":");
+	while (dir)
+	{
+		/* construit "<dir>/<cmd>" */
+		len  = strlen(dir) + 1 + strlen(cmd) + 1;
+		full = malloc(len);
+		if (!full)
 			break;
-		
-		tokenize(line, args);
-		
+		sprintf(full, "%s/%s", dir, cmd);        /* access() teste l'existence + droit X */
+		if (access(full, X_OK) == 0)
+		{
+			free(copy);
+			return full;
+		}
+		free(full);
+		dir = strtok(NULL, ":");
+	}    free(copy);
+	return NULL;
+}int main(int argc, char **argv, char **env)
+{
+	char *line;
+	char *args[4096];
+	size_t linecap;
+	ssize_t nread;
+	pid_t pid;
+	int status;
+	char *cmd_path;    (void)argc;  /* on n’utilise pas argc directement */    line = NULL;
+	linecap = 0;    while (1)
+	{
+		if (isatty(STDIN_FILENO))
+			printf("$ ");        nread = getline(&line, &linecap, stdin);
+		if (nread < 0)
+			break;        tokenize(line, args);
 		if (args[0] == NULL)
+			continue;        cmd_path = find_path(args[0], env);
+		if (cmd_path == NULL)
+		{
+			fprintf(stderr, "%s: 1: %s: not found\n", argv[0], args[0]);
 			continue;
-
-		if (isatty(STDIN_FILENO) != 0)
-			printf("$ ");
-			
-		if (stat(args[0], &st) != 0)
-			{
-				fprintf(stderr, "hsh: 1: %s: not found\n", args[0]);
-				break;
-			}
-		process = fork();
-			
-		if (process < 0)
+		}        pid = fork();
+		if (pid < 0)
 		{
 			perror("fork failed");
-			return (1);
+			free(cmd_path);
+			continue;
 		}
-
-		if (process == 0)
+		if (pid == 0)
 		{
-			execve(args[0], args, NULL);
-			break;
+			execve(cmd_path, args, env);
+			perror("execve failed");
+			exit(EXIT_FAILURE);
 		}
-
-		else
-			wait (&status);
-
-	
-	}
-	free(line);
-return (0);
+		waitpid(pid, &status, 0);
+		free(cmd_path);
+	}    free(line);
+	return 0;
 }
