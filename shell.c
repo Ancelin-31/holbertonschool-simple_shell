@@ -15,21 +15,21 @@ int main(int argc, char **argv, char **env)
 	ssize_t lineread;
 	int i;
 	(void)argc;
-	
+
 	while (1)
 	{
 		if (isatty(STDIN_FILENO))
 			printf("($) ");
-		
+
 		lineread = getline(&line, &linecap, stdin);
-		
+
 		if (lineread < 0)
 			break;
 		args = tokenize(line);
-		
+
 		if (args && args[0])
 			handle_command(args, argv, env);
-		
+
 		for (i = 0; args && args[i]; i++)
 			free(args[i]);
 		free(args);

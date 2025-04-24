@@ -2,15 +2,18 @@
 
 /**
 * _getenv - takes a string and environment variables as arguments
+* @string: given string
+* @env: environment of the shell
 * Return: value of the given environment variable
 */
 
-char * _getenv(char *string, char **env)
+char *_getenv(char *string, char **env)
 {
 	size_t len;
-	int i =0;
+	int i = 0;
+
 	len = strlen(string);
-	
+
 	for (i = 0; env[i]; i++)
 	{
 		if (strncmp(env[i], string, len) == 0 && env[i][len] == '=')
@@ -29,11 +32,12 @@ char * _getenv(char *string, char **env)
 char *find_path(char *cmd, char **env)
 {
 	char *path, *copy, *dir, *full;
-	size_t len; /* Si l'utilisateur donne un slash, teste directement */
+	size_t len;
+
 	if (strchr(cmd, '/'))
 	{
 		if (access(cmd, X_OK) == 0)
-                { /* duplique cmd */
+		{
 			len = strlen(cmd) + 1;
 			full = malloc(len);
 			if (full)
@@ -41,22 +45,22 @@ char *find_path(char *cmd, char **env)
 			return (full);
 		}
 		return (NULL);
-	}    /* Sinon, on récupère PATH */
+	}
 	path = _getenv("PATH", env);
 	if (!path)
-		return (NULL);    /* copie PATH pour strtok */
+		return (NULL);
 	copy = malloc(strlen(path) + 1);
 	if (!copy)
 		return (NULL);
-	strcpy(copy, path);    /* pour chaque répertoire de PATH */
+	strcpy(copy, path);
 	dir = strtok(copy, ":");
 	while (dir)
-        {/* construit "<dir>/<cmd>" */
+	{
 		len  = strlen(dir) + 1 + strlen(cmd) + 1;
 		full = malloc(len);
 		if (!full)
 			break;
-		sprintf(full, "%s/%s", dir, cmd);        /* access() teste l'existence + droit X */
+		sprintf(full, "%s/%s", dir, cmd);
 		if (access(full, X_OK) == 0)
 		{
 			free(copy);
@@ -64,7 +68,7 @@ char *find_path(char *cmd, char **env)
 		}
 		free(full);
 		dir = strtok(NULL, ":");
-        }
+	}
 	free(copy);
 	return (NULL);
 }
