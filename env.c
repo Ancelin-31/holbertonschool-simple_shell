@@ -57,7 +57,7 @@ char *find_path(char *cmd, char **env)
 		if (!full)
 			break;
 		sprintf(full, "%s/%s", dir, cmd);        /* access() teste l'existence + droit X */
-		if (access(full, X_OK) == -1)
+		if (access(full, X_OK) == 0)
 		{
 			free(copy);
 			return (full);
