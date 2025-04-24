@@ -13,7 +13,7 @@ int main(int argc, char **argv, char **env)
 	size_t linecap;
 	ssize_t lineread;
 	pid_t pid;
-	int status;
+	int status, i = 0;
 	(void)argc;  /* on n’utilise pas argc directement */
 	linecap = 0;
 	
@@ -32,6 +32,9 @@ int main(int argc, char **argv, char **env)
 		
 		if (args[0] == NULL)
 		{
+			while (args[i] != NULL)
+				free(args[i++]);
+			free(args);
 			free(line);
 			continue;
 		}
@@ -58,7 +61,9 @@ int main(int argc, char **argv, char **env)
 		waitpid(pid, &status, 0);
 		free(cmd_path);
 	}
+	while (args[i])
+		free(args[i++]);
 	free(args);
 	free(line);
-	return 0;
+	return (0);
 }
