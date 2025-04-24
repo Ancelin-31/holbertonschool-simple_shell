@@ -1,15 +1,20 @@
 #include "shell.h"
 
-void tokenize(char *line, char **args)
+char **tokenize(char *line)
 {
-	char *linetok;
-	int i = 0;    i = 0;
-	linetok = strtok(line, " \n");
-	while (linetok)
+	char **args = malloc(1024 * sizeof(char));
+	char *newLine = strdup(line);
+	char *linetok = strtok(newLine, " \n");
+	int i = 0;
+	
+	while (linetok != NULL)
 	{
-		args[i] = linetok;
-		i++;
+		args[i] = strdup(linetok);
 		linetok = strtok(NULL, " \n");
+		i++;
 	}
-	args[i] = NULL;
+	args[i] = '\0';
+
+	free(newLine);
+	return (args);
 }

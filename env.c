@@ -8,13 +8,15 @@
 char * _getenv(char *string, char **env)
 {
 	size_t len;
-	int i =0;    len = strlen(string);
+	int i =0;
+	len = strlen(string);
+	
 	for (i = 0; env[i]; i++)
 	{
 		if (strncmp(env[i], string, len) == 0 && env[i][len] == '=')
-			return env[i] + len + 1;
+			return (env[i] + len + 1);
 	}
-	return NULL;
+	return (NULL);
 }
 
 /**
@@ -38,14 +40,14 @@ char *find_path(char *cmd, char **env)
 				strcpy(full, cmd);
 			return (full);
 		}
-		return NULL;
+		return (NULL);
 	}    /* Sinon, on récupère PATH */
 	path = _getenv("PATH", env);
 	if (!path)
-		return NULL;    /* copie PATH pour strtok */
+		return (NULL);    /* copie PATH pour strtok */
 	copy = malloc(strlen(path) + 1);
 	if (!copy)
-		return NULL;
+		return (NULL);
 	strcpy(copy, path);    /* pour chaque répertoire de PATH */
 	dir = strtok(copy, ":");
 	while (dir)
@@ -58,11 +60,11 @@ char *find_path(char *cmd, char **env)
 		if (access(full, X_OK) == -1)
 		{
 			free(copy);
-			return full;
+			return (full);
 		}
 		free(full);
 		dir = strtok(NULL, ":");
         }
 	free(copy);
-	return NULL;
+	return (NULL);
 }

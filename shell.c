@@ -9,32 +9,34 @@
 
 int main(int argc, char **argv, char **env)
 {
-	char *line, args[4096], cmd_path;
+	char *line = NULL, **args = NULL, *cmd_path = NULL;
 	size_t linecap;
-	ssize_t nread;
+	ssize_t lineread;
 	pid_t pid;
 	int status;
 	(void)argc;  /* on n’utilise pas argc directement */
-	line = NULL;
 	linecap = 0;
 	
 	while (1)
 	{
 		if (isatty(STDIN_FILENO))
 		{
-			printf("$ ");
-			nread = getline(&line, &linecap, stdin);
+			printf("($)");
 		}
-		if (nread < 0)
+		lineread = getline(&line, &linecap, stdin);
+		if (lineread < 0)
 		{
 			break;
-			tokenize(line, args);
 		}
+		args = tokenize(line);
+		
 		if (args[0] == NULL)
 		{
+			free(line);
 			continue;
-			cmd_path = find_path(args[0], env);
 		}
+		cmd_path = find_path(args[0], env);
+		
 		if (cmd_path == NULL)
 		{
 			fprintf(stderr, "%s: 1: %s: not found\n", argv[0], args[0]);
@@ -56,6 +58,7 @@ int main(int argc, char **argv, char **env)
 		waitpid(pid, &status, 0);
 		free(cmd_path);
 	}
+	free(args);
 	free(line);
 	return 0;
 }
