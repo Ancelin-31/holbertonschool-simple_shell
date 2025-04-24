@@ -13,5 +13,6 @@
 char *_getenv(char *string, char **env);
 char *find_path(char *cmd, char **env);
 char **tokenize(char *line);
+void handle_command(char **args, char **argv, char **env);
 
 #endif
